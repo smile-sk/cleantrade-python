@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cleantrade"
+version = "0.1.0"
+description = "Non-custodial USDT (TRC20) payment API client — no middlemen, no % fees, no KYC."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "CleanTrade" }]
+keywords = ["usdt", "trc20", "tron", "crypto", "payments", "gateway", "telegram", "non-custodial"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = ["requests>=2.31"]
+
+[project.urls]
+Homepage = "https://pay.cleantrade.info"
+Documentation = "https://pay.cleantrade.info/integrate.html"
+Source = "https://github.com/cleantrade/cleantrade-python"
+
+[tool.setuptools]
+packages = ["cleantrade"]
