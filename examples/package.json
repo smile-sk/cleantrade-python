@@ -1,0 +1,11 @@
+{
+  "name": "cleantrade-examples",
+  "private": true,
+  "description": "CleanTrade SDK examples (Node.js)",
+  "scripts": {
+    "start": "node express_webhook.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

@@ -72,8 +72,10 @@ def handle(body: bytes):
 ```
 
 See [`examples/webhook_server.py`](examples/webhook_server.py) for a complete
-FastAPI receiver, and [`examples/telegram_bot/`](examples/telegram_bot/) for a
-ready-to-run Telegram shop bot.
+FastAPI receiver, [`examples/express_webhook.js`](examples/express_webhook.js)
+for a Node.js/Express receiver (`cd examples && npm install && node
+express_webhook.js`), and [`examples/telegram_bot/`](examples/telegram_bot/) for
+a ready-to-run Telegram shop bot.
 
 ## API reference
 
