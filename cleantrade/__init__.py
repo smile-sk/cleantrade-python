@@ -21,14 +21,15 @@ from .errors import (
     NotFoundError,
     UnauthorizedError,
 )
-from .webhook import parse_webhook, WebhookPayload
+from .webhook import make_fastapi_handler, parse_webhook, WebhookPayload
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __all__ = [
     "Client",
     "Order",
     "parse_webhook",
     "WebhookPayload",
+    "make_fastapi_handler",
     "CleanTradeError",
     "UnauthorizedError",
     "LimitReachedError",
