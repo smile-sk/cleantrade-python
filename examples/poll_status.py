@@ -13,9 +13,11 @@ from cleantrade import Client
 
 client = Client(os.environ["CLEANTRADE_API_KEY"])
 
-# 1. Create an order — the API returns a unique amount and YOUR wallet.
+# 1. Create an order — pass YOUR TRC20 wallet. The API returns a unique amount
+#    for that wallet and echoes the same address back.
 order = client.create_order(
     product_id="indicator.zip",
+    wallet=os.environ["CLEANTRADE_WALLET"],
     customer_ref="user123",
     # webhook_url="https://my.site/hook",  # optional
 )

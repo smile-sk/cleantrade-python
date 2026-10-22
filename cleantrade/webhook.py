@@ -95,3 +95,49 @@ def make_fastapi_handler(deliver):
         return "ok"
 
     return handler
+def verify_webhook(body: bytes | str, signature: str, timestamp: str,
+                   secret: str, tolerance: int = 300) -> bool:
+    """Verify that a webhook really came from CleanTrade.
+
+    CleanTrade signs every delivery with HMAC-SHA256 over
+    ``"<timestamp>.<raw body>"`` and sends two headers::
+
+        X-CleanTrade-Timestamp: 1758027553
+        X-CleanTrade-Signature: sha256=3f9c...
+
+    Pass the RAW request body exactly as received (do not re-encode it),
+    plus those two headers and your shared secret. Returns ``False`` when
+    the signature does not match or the timestamp is too old (replay).
+
+    Example::
+
+        from cleantrade import verify_webhook
+
+        ok = verify_webhook(
+            body=await request.body(),
+            signature=request.headers["X-CleanTrade-Signature"],
+            timestamp=request.headers["X-CleanTrade-Timestamp"],
+            secret=os.environ["CLEANTRADE_WEBHOOK_SECRET"],
+        )
+        if not ok:
+            return Response(status_code=400)
+    """
+    import hashlib
+    import hmac
+    import time
+
+    if not signature or not timestamp or not secret:
+        return False
+    raw = body if isinstance(body, bytes) else str(body).encode("utf-8")
+    try:
+        fresh = abs(time.time() - int(timestamp)) <= int(tolerance)
+    except (TypeError, ValueError):
+        fresh = False
+    if not fresh:
+        return False
+    expected = "sha256=" + hmac.new(
+        secret.encode("utf-8"),
+        str(timestamp).encode("ascii") + b"." + raw,
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature.strip())

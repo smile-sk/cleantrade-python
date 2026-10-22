@@ -46,12 +46,14 @@ class TestClient(unittest.TestCase):
         resp.json.return_value = {"order_id": "abc", "amount": 9.57,
                                   "wallet": "T", "status": "created"}
         client, session = self._client(resp)
-        order = client.create_order("indicator.zip", webhook_url="https://h/x")
+        order = client.create_order("indicator.zip", "TUoZyqzdCB85SWSYQpBPyKVRi1TbpejWfD",
+                                    webhook_url="https://h/x")
         self.assertEqual(order.order_id, "abc")
         _, kwargs = session.request.call_args
         payload = kwargs["json"]
         self.assertEqual(payload["product_id"], "indicator.zip")
         self.assertEqual(payload["webhook_url"], "https://h/x")
+        self.assertEqual(payload["wallet"], "TUoZyqzdCB85SWSYQpBPyKVRi1TbpejWfD")
         self.assertNotIn("amount", payload)  # unique amount by default
         self.assertEqual(session.headers["X-API-Key"], "sp_live_x")
 
@@ -66,7 +68,7 @@ class TestClient(unittest.TestCase):
         resp.json.return_value = {"detail": "monthly order limit reached"}
         client, _ = self._client(resp)
         with self.assertRaises(LimitReachedError):
-            client.create_order("x")
+            client.create_order("x", "TUoZyqzdCB85SWSYQpBPyKVRi1TbpejWfD")
 
         resp = mock.Mock(status_code=404)
         resp.json.return_value = {"detail": "order not found"}

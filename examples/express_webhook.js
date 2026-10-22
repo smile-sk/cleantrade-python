@@ -14,9 +14,9 @@
  * public URL when creating orders:
  *
  *   node -e "const {createOrder} = require('./express_webhook'); \
- *     createOrder('indicator.zip', 'https://your.domain/hook').then(console.log)"
+ *     createOrder('indicator.zip', 'TYourTRC20Wallet...', {webhookUrl: 'https://your.domain/hook'}).then(console.log)"
  *
- * The printed order contains `amount` and `wallet` — show them to the buyer.
+ * The printed order contains `amount` and `wallet` (your TRC20 address, echoed back) — show them to the buyer.
  */
 
 const express = require("express");
@@ -42,10 +42,13 @@ const GOODS = {
  *   Prefer omitting it.
  *   webhookUrl: URL CleanTrade POSTs to when the order is paid.
  *   customerRef: your buyer id (Telegram id, email, ...).
+ * @param {string} wallet YOUR TRC20 address (34 chars, starts with T).
+ *   Required: the buyer pays to this address, and the unique amount is unique
+ *   within this wallet.
  * @returns {Promise<{order_id: string, amount: number, wallet: string, status: string, created_at: string}>}
  */
-async function createOrder(productId, { amount, webhookUrl, customerRef } = {}) {
-  const body = { product_id: productId };
+async function createOrder(productId, wallet, { amount, webhookUrl, customerRef } = {}) {
+  const body = { product_id: productId, wallet };
   if (amount !== undefined) body.amount = amount;
   if (webhookUrl) body.webhook_url = webhookUrl;
   if (customerRef) body.customer_ref = customerRef;

@@ -1,14 +1,15 @@
-"""CleanTrade — non-custodial USDT (TRC20) payment API client.
+"""CleanTrade — USDT (TRC20) payment API client.
 
-Payments go straight to your wallet. No middlemen, no percentage fees,
-no KYC. Just unique amounts + webhooks.
+The buyer pays to YOUR TRC20 address, which you pass in every order. No
+percentage fees, no KYC. Just unique amounts + webhooks.
 
 Quick start::
 
     from cleantrade import Client
 
     client = Client("sp_live_YOUR_KEY")
-    order = client.create_order("indicator.zip", webhook_url="https://my.site/hook")
+    order = client.create_order("indicator.zip", "TYourTRC20Wallet...",
+                                webhook_url="https://my.site/hook")
     print("Ask the buyer to send", order.amount, "USDT to", order.wallet)
 """
 
@@ -21,13 +22,15 @@ from .errors import (
     NotFoundError,
     UnauthorizedError,
 )
-from .webhook import make_fastapi_handler, parse_webhook, WebhookPayload
+from .webhook import (make_fastapi_handler, parse_webhook, verify_webhook,
+                      WebhookPayload)
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __all__ = [
     "Client",
     "Order",
     "parse_webhook",
+    "verify_webhook",
     "WebhookPayload",
     "make_fastapi_handler",
     "CleanTradeError",

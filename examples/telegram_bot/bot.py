@@ -7,6 +7,7 @@ Setup:
     pip install aiogram cleantrade
     export TELEGRAM_BOT_TOKEN=...            # from @BotFather
     export CLEANTRADE_API_KEY=sp_live_...    # from pay.cleantrade.info
+    export CLEANTRADE_WALLET=T...            # YOUR TRC20 wallet
 
 Run:
     python bot.py
@@ -23,6 +24,7 @@ from cleantrade import Client, Order
 
 BOT_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 API_KEY = os.environ["CLEANTRADE_API_KEY"]
+WALLET = os.environ["CLEANTRADE_WALLET"]   # your TRC20 address, sent with every order
 
 PRODUCT_ID = "indicator.zip"
 PRICE_TEXT = "9.99 USDT"          # display price (the actual unique amount differs)
@@ -44,7 +46,7 @@ async def start(message: Message) -> None:
     )
     await message.answer(
         "Hi! I sell the SuperIndicator for USDT (TRC20).\n"
-        "No registration, no KYC — you send crypto straight to my wallet\n"
+        "No registration, no KYC — you pay USDT to the address I show you\n"
         "and the bot detects it in ~30 seconds.",
         reply_markup=kb,
     )
@@ -54,6 +56,7 @@ async def start(message: Message) -> None:
 async def buy(message: Message) -> None:
     order = client.create_order(
         product_id=PRODUCT_ID,
+        wallet=WALLET,
         customer_ref=str(message.from_user.id),
     )
     active[order.order_id] = message.chat.id

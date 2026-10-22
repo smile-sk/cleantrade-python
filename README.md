@@ -2,36 +2,40 @@
 
 Accept **USDT (TRC20)** payments in your bot, microservice or small e-commerce
 — **without a payment aggregator**. No middlemen, no percentage fees, no KYC,
-no smart contracts. The money goes straight to **your** wallet.
+no smart contracts. Every order is paid to **your own** TRC20 wallet — you pass
+it in the request, and the API returns the same address in the order.
 
 ```python
 from cleantrade import Client
 
 client = Client("sp_live_YOUR_KEY")
-order = client.create_order("indicator.zip", webhook_url="https://my.site/hook")
+order = client.create_order("indicator.zip", "TYourTRC20WalletHere...",
+                            webhook_url="https://my.site/hook")
 
 print(f"Ask the buyer to send {order.amount} USDT to {order.wallet}")
 # → Ask the buyer to send 9.57 USDT to TJ7...K9
 ```
 
 That's it. The buyer sends the exact amount, CleanTrade detects the on-chain
-payment in **~30 seconds** and fires a webhook with the `tx_id`. You deliver
+payment usually in **under a minute** and fires a webhook with the `tx_id`. You deliver
 the goods.
 
 ## Why CleanTrade
 
 | | CleanTrade | Classic crypto gateways |
 |---|---|---|
-| Fee | **0%** — flat subscription | 1–3% of every payment |
-| Funds | **Non-custodial** — direct to your wallet | Held by the gateway (custody) |
+| Fee | **0%** — flat subscription | 0.5% (NOWPayments, Plisio) to 1%+ (Coinbase Commerce, CoinGate, BitPay) |
+| Funds | **Your own TRC20 wallet**, set in each order | Held inside the gateway's balance |
 | KYC / approval | **None** — API key in ~60 seconds | Docs, business registration, review queue |
-| Setup | `pip install cleantrade` | Weeks of integration |
-| Detection | ~30 seconds (unique amounts) | Minutes to hours |
+| Setup | 3 lines of code | Weeks of integration |
+| Detection | Usually under a minute (unique amounts) | Minutes to hours |
 
 ## Install
 
 ```bash
-pip install cleantrade
+git clone https://github.com/smile-sk/cleantrade-python
+cd cleantrade-python
+pip install -e .
 ```
 
 Get your API key at [pay.cleantrade.info](https://pay.cleantrade.info)
@@ -46,7 +50,8 @@ import time
 from cleantrade import Client
 
 client = Client("sp_live_YOUR_KEY")
-order = client.create_order("indicator.zip", customer_ref="user123")
+order = client.create_order("indicator.zip", "TYourTRC20WalletHere...",
+                            customer_ref="user123")
 
 while True:
     order = client.get_order(order.order_id)
@@ -59,7 +64,7 @@ while True:
 ### 2. Webhooks (recommended for production)
 
 Pass a `webhook_url` when creating the order. CleanTrade POSTs to it on
-payment and retries until your server answers 2xx.
+payment and retries up to 5 times while your server does not answer 2xx.
 
 ```python
 from cleantrade import parse_webhook
@@ -81,7 +86,7 @@ a ready-to-run Telegram shop bot.
 
 | Method | Path | Description |
 |---|---|---|
-| `POST` | `/v1/orders` | Create an order → unique amount + your wallet |
+| `POST` | `/v1/orders` | Create an order with your wallet → unique amount for that wallet |
 | `GET` | `/v1/orders/{order_id}` | Check order status |
 | `POST` | `/v1/subscribe` | Subscribe to a plan (pays with USDT) |
 | `GET` | `/v1/subscribers/me` | Current plan, limit, monthly usage |
@@ -110,7 +115,7 @@ Full spec: [Swagger UI](https://pay.cleantrade.info/docs) ·
 ## How payment detection works
 
 Every order gets a **unique amount** (`9.57`, `9.84`, …). The buyer sends
-exactly that amount to your wallet — no smart contract, no extra gas, no
+exactly that amount to the TRC20 address from the order (your wallet) — no smart contract, no extra gas, no
 address-per-order logic. CleanTrade polls the chain every ~30 seconds, matches
 the amount and confirms the order.
 
@@ -118,10 +123,10 @@ the amount and confirms the order.
 
 | Plan | Price | Orders/mo | Extras |
 |---|---|---|---|
-| Free | $0 | 5 | 1 wallet, webhooks with retries |
-| Starter | $9.99 | 100 | 3 wallets, priority support |
-| Pro | $29.99 | 3000 | Unlimited wallets, multiple API keys, webhook log |
-| Business | $79.99 | Unlimited | Own domain, SLA, dedicated support |
+| Free | $0 | 5 | webhooks with retries |
+| Starter | $9.99 | 100 | priority support |
+| Pro | $29.99 | 3000 | priority support |
+| Business | $79.99 | Unlimited | dedicated support |
 | Starter Yearly | $99.90/yr | 100 | 12 months for the price of 10 |
 | Pro Yearly | $299.90/yr | 3000 | 12 months for the price of 10 |
 | Business Yearly | $799.90/yr | Unlimited | 12 months for the price of 10 |

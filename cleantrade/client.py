@@ -93,6 +93,7 @@ class Client:
     def create_order(
         self,
         product_id: str,
+        wallet: str,
         amount: Optional[float] = None,
         webhook_url: Optional[str] = None,
         customer_ref: Optional[str] = None,
@@ -100,14 +101,20 @@ class Client:
         """Create a payment order.
 
         :param product_id: your product identifier (shown in webhooks).
+        :param wallet: YOUR TRC20 address (34 chars, starts with ``T``).
+            Required: the buyer pays to this address, and orders are matched
+            by the unique amount *within* this wallet. Pass it in every order
+            — the same address or a different one, both are fine.
         :param amount: fixed amount. If omitted, CleanTrade generates a
-            *unique* amount (e.g. 9.57) so payments can be matched on-chain
-            without smart contracts. Prefer omitting it.
+            *unique* amount (e.g. 9.57) for that wallet. Prefer omitting it.
         :param webhook_url: URL CleanTrade POSTs to when the order is paid.
         :param customer_ref: your buyer id (Telegram id, email, ...).
+        :raises BadRequestError: wallet is not a valid TRC20 address (HTTP 422).
+        :raises ConflictError: this wallet already has an active order with
+            this amount (HTTP 409).
         :raises LimitReachedError: monthly plan limit exceeded (HTTP 402).
         """
-        payload: dict[str, Any] = {"product_id": product_id}
+        payload: dict[str, Any] = {"product_id": product_id, "wallet": wallet}
         if amount is not None:
             payload["amount"] = amount
         if webhook_url:

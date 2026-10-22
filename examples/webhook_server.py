@@ -10,7 +10,7 @@ Run:
 Expose it to the internet (e.g. via a reverse proxy or tunnel) and pass the
 public URL when creating orders::
 
-    client.create_order("indicator.zip",
+    client.create_order("indicator.zip", "TYourTRC20Wallet...",
                         webhook_url="https://your.domain/hook")
 """
 

@@ -1,19 +1,19 @@
 # Telegram Subscription Bot — Python (aiogram + CleanTrade API)
 
 A ready-to-run Telegram bot that sells a digital product for **USDT (TRC20)**
-with zero middlemen: the money goes straight to *your* wallet, CleanTrade
-only detects the payment and tells the bot.
+on a flat subscription: the buyer pays to *your own* TRC20 wallet (the bot passes
+it in every order), and CleanTrade detects the payment and tells the bot.
 
 ## How it works
 
 1. Buyer presses the button.
 2. Bot creates an order via CleanTrade API → gets a **unique amount** (e.g. `9.57 USDT`).
-3. Bot shows the amount + your wallet address.
-4. Buyer sends USDT directly to your wallet.
-5. CleanTrade detects the on-chain payment in ~30 seconds.
+3. Bot shows the amount + your wallet address from the order.
+4. Buyer sends USDT to that address.
+5. CleanTrade detects the on-chain payment, usually under a minute.
 6. Bot delivers the download link automatically.
 
-No KYC, no approval queue, no 1–3% cut. Just a flat subscription.
+No KYC, no approval queue, no per-transaction cut. Just a flat subscription.
 
 ## Run
 
